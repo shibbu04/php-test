@@ -9,27 +9,46 @@ services:
             - ./:/server/http
         ports:
             - "8080:80"
-            #- "443:443"
+            # - "443:443"
         links:
+            - mysql
             - postgres
             - redis
         environment:
             DEBUG: 'true'
 
+    mysql:
+        image: mysql:5.7
+        restart: unless-stopped
+        ports:
+            - "3307:3306" # Changed host port to 3307
+        environment:
+            MYSQL_ROOT_PASSWORD: hellofresh
+            MYSQL_DATABASE: hellofresh
+            MYSQL_USER: hellofresh
+            MYSQL_PASSWORD: hellofresh
+
     postgres:
-        image: onjin/alpine-postgres:9.5
+        image: postgres:9.5
         restart: unless-stopped
         ports:
             - "5432:5432"
         environment:
-            LC_ALL: C.UTF-8
             POSTGRES_USER: hellofresh
             POSTGRES_PASSWORD: hellofresh
             POSTGRES_DB: hellofresh
 
     redis:
-        image: sickp/alpine-redis:3.2.2
+        image: redis:3.2.2
         restart: unless-stopped
         ports:
             - "6379:6379"
-
+    
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        restart: unless-stopped
+        ports:
+            - "8081:80"
+        environment:
+            PMA_HOST: mysql
+            MYSQL_ROOT_PASSWORD: hellofresh
