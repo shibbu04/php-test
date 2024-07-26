@@ -61,8 +61,8 @@ function getRecipe($id) {
 function createRecipe() {
     global $pdo;
     $input = json_decode(file_get_contents('php://input'), true);
-    $stmt = $pdo->prepare('INSERT INTO recipes (name, description) VALUES (?, ?)');
-    $stmt->execute([$input['name'], $input['description']]);
+    $stmt = $pdo->prepare('INSERT INTO recipes (name, prep_time, difficulty, vegetarian) VALUES (?, ?, ?, ?)');
+    $stmt->execute([$input['name'], $input['prep_time'], $input['difficulty'], $input['vegetarian']]);
     header('Content-Type: application/json');
     echo json_encode(['id' => $pdo->lastInsertId()]);
 }
@@ -70,8 +70,8 @@ function createRecipe() {
 function updateRecipe($id) {
     global $pdo;
     $input = json_decode(file_get_contents('php://input'), true);
-    $stmt = $pdo->prepare('UPDATE recipes SET name = ?, description = ? WHERE id = ?');
-    $stmt->execute([$input['name'], $input['description'], $id]);
+    $stmt = $pdo->prepare('UPDATE recipes SET name = ?, prep_time = ?, difficulty = ?, vegetarian = ? WHERE id = ?');
+    $stmt->execute([$input['name'], $input['prep_time'], $input['difficulty'], $input['vegetarian'], $id]);
     header("HTTP/1.1 204 No Content");
 }
 
@@ -87,6 +87,6 @@ function rateRecipe($id) {
     $input = json_decode(file_get_contents('php://input'), true);
     $stmt = $pdo->prepare('INSERT INTO ratings (recipe_id, rating) VALUES (?, ?)');
     $stmt->execute([$id, $input['rating']]);
-    header("HTTP/1.1 204 No Content");
+    header("HTTP/1.1 201 Created");
 }
 ?>
