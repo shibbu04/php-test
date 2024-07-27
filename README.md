@@ -1,108 +1,201 @@
-# PHP Developer Test
+# Recipe API
 
-Hello and thanks for taking the time to try this out.
+## Introduction
 
-The goal of this test is to assert (to some degree) your coding and architectural skills. You're given a simple problem so you can focus on showcasing development techniques. We encourage you to overengineer the solution to show off what you can do - assume you're building a production-ready application that other developers will need to work on and add to over time.
+Hello and thank you for evaluating my submission for the PHP Developer Test. This file outlines the setup process, project structure, and how to interact with the API endpoints using Postman. The goal of this project was to build a simple, production-ready Recipes API conforming to REST practices.
 
-You're **allowed and encouraged** to use third party libraries, as long as you put them together yourself **without relying on a framework or microframework** to do it for you. An effective developer knows what to build and what to reuse, but also how his/her tools work. Be prepared to answer some questions about those libraries, like why you chose them and what other alternatives you're familiar with.
+## Prerequisites
 
-As this is a code review process, please avoid adding generated code to the project. This makes our jobs as reviewers more difficult, as we can't review code you didn't write. This means avoiding libraries like _Propel ORM_, which generates thousands of lines of code in stub files.
+To run this application, you will need:
+- Docker
+- Docker Compose
 
+## Project Structure
 
-## Prerequsites
+```
+PHP-TEST/
+├── docker/
+│   └── nginx/
+│       └── default.conf
+├── web/
+│   ├── auth.php
+│   ├── error.log
+│   ├── index.php
+│   └── validation.php
+├── db.php
+├── docker-compose.yml
+├── Dockerfile
+└── README.md
+```
 
-We use [Docker](https://www.docker.com/products/docker) to administer this test. This ensures that we get an identical result to you when we test your application out, and it also matches our internal development workflows. If you don't have it already, you'll need Docker installed on your machine. **The application MUST run in the Docker containers** - if it doesn't we cannot accept your submission. You **MAY** edit the containers or add additional ones if you like (or completely re-do everything), but this **MUST** be clearly documented.
+## Setup Instructions
 
-We have provided some containers to help build your application in PHP with a variety of persistence layers available to use. (you may start from scratch if you like)
+1. **Clone the Repository**
 
-### Technology
+   If you received a zip file, unzip the contents into your desired directory. If you are cloning from a Git repository, use the following command:
 
-- Valid PHP 7.1 or newer
-- Persist data to either Postgres, Mysql (add yourself), Redis, or MongoDB (in the provided containers).
-    - Postgres connection details:
-        - host: `postgres`
-        - port: `5432`
-        - dbname: `hellofresh`
-        - username: `hellofresh`
-        - password: `hellofresh`
-    - Redis connection details:
-        - host: `redis`
-        - port: `6379`
-    - MongoDB connection details:
-        - host: `mongodb`
-        - port: `27017`
-- Use the provided `docker-compose.yml` file in the root of this repository. You are free to add more containers to this if you like.
+   ```sh  'git@github.com:shibbu04/php-test.git'
+   git clone 'https://github.com/shibbu04/php-test.git'
+   ```
 
-## Instructions
+2. **Navigate to the Project Directory**
 
-1. Create a Git Repository and add these files
-- Run `docker-compose up -d` to start the development environment.
-- Visit `http://localhost` to see the contents of the web container and develop your application.
-- Add all code changes to the git repository
-- Zip all completed files (with the git repository files) and email back to us.
+   ```sh
+   cd PHP-TEST
+   ```
 
-## Requirements
+3. **Start Docker Containers**
 
-We'd like you to build a simple Recipes API. The API **MUST** conform to REST practices and **MUST** provide the following functionality:
+   Build and start the Docker containers using Docker Compose:
 
-- List, create, read, update, and delete Recipes
-- Search recipes
-- Rate recipes
+   ```sh
+   docker-compose up --d
+   ```
 
-### Endpoints
+   This will set up the necessary containers for the web server, MySQL database, PostgreSQL database, Redis, and phpMyAdmin.
 
-Your application **MUST** conform to the following endpoint structure and return the HTTP status codes appropriate to each operation. Endpoints specified as protected below **SHOULD** require authentication to view. The method of authentication is up to you.
+4. **Access the Application**
 
-##### Recipes
+   Once the containers are running, you can access the application at `http://localhost:8080`.
 
-| Name   | Method      | URL                    | Protected |
-| ---    | ---         | ---                    | ---       |
-| List   | `GET`       | `/recipes`             | ✘         |
-| Create | `POST`      | `/recipes`             | ✓         |
-| Get    | `GET`       | `/recipes/{id}`        | ✘         |
-| Update | `PUT/PATCH` | `/recipes/{id}`        | ✓         |
-| Delete | `DELETE`    | `/recipes/{id}`        | ✓         |
-| Rate   | `POST`      | `/recipes/{id}/rating` | ✘         |
+5. **Database Access**
 
-An endpoint for recipe search functionality **MUST** also be implemented. The HTTP method and endpoint for this **MUST** be clearly documented.
+   - MySQL: 
+     - Host: localhost
+     - Port: 3307               // Change as per your need by default(3306) , if you are using 3306 or any other then make sure to do changes inside docker-compode.yml
+     - Username: hellofresh
+     - Password: hellofresh
+     - Database: hellofresh
 
-### Schema
+   - PostgreSQL:
+     - Host: localhost
+     - Port: 5432
+     - Username: hellofresh
+     - Password: hellofresh
+     - Database: hellofresh
 
-- **Recipe**
-    - Unique ID
-    - Name
-    - Prep time
-    - Difficulty (1-3)
-    - Vegetarian (boolean)
+   - phpMyAdmin:
+     - URL: http://localhost:8081
+     - Server: mysql
+     - Username: root
+     - Password: hellofresh
 
-Additionally, recipes can be rated many times from 1-5 and a rating is never overwritten.
+## API Endpoints
 
-If you need a more visual idea of how the data should be represented, [take a look at one of our recipe cards](https://ddw4dkk7s1lkt.cloudfront.net/card/hdp-chicken-with-farro-75b306ff.pdf?t=20160927003916).
+### Recipes
 
-## Evaluation criteria
+1. **List Recipes**
 
-These are some aspects we pay particular attention to:
+   - **Method:** GET
+   - **URL:** `/recipes`
+   - **Protected:** No
+   - **Description:** Retrieves a list of all recipes.
+   - **Pagination:** Use `page` and `per_page` query parameters, e.g., `/recipes?page=1&per_page=10`
 
-- You **MUST** use packages, but you **MUST NOT** use a web-app framework or microframework. That is, you can use [symfony/dependency-injection](https://packagist.org/packages/symfony/dependency-injection) but not [symfony/symfony](https://packagist.org/packages/symfony/symfony).
-- Your application **MUST** run within the containers. Please provide short setup instructions.
-- The API **MUST** return valid JSON and **MUST** follow the endpoints set out above.
-- You **MUST** write testable code and demonstrate unit testing it (for clarity,  PHPUnit is not considered a framework as per the first point above. We encourage you to use PHPUnit or any other kind of **testing** framework).
-- You **SHOULD** pay attention to best security practices.
-- You **SHOULD** follow SOLID principles where appropriate.
-- You do **NOT** have to build a UI for this API.
+2. **Create Recipe**
 
-The following earn you bonus points:
+   - **Method:** POST
+   - **URL:** `/recipes`
+   - **Protected:** Yes
+   - **Description:** Creates a new recipe. Requires authentication.
 
-- Your answers during code review
-- An informative, detailed description in the PR
-- Setup with a one liner or a script
-- Content negotiation
-- Pagination
-- Using any kind of Database Access Abstraction
-- Other types of testing - e.g. integration tests
-- Following the industry standard style guide for the language you choose to use - `PSR-2` etc.
-- A git history (even if brief) with clear, concise commit messages.
+3. **Get Recipe**
 
----
+   - **Method:** GET
+   - **URL:** `/recipes/{id}`
+   - **Protected:** No
+   - **Description:** Retrieves a specific recipe by ID.
 
-Good luck!
+4. **Update Recipe**
+
+   - **Method:** PUT
+   - **URL:** `/recipes/{id}`
+   - **Protected:** Yes
+   - **Description:** Updates a specific recipe by ID. Requires authentication.
+
+5. **Delete Recipe**
+
+   - **Method:** DELETE
+   - **URL:** `/recipes/{id}`
+   - **Protected:** Yes
+   - **Description:** Deletes a specific recipe by ID. Requires authentication.
+
+6. **Rate Recipe**
+
+   - **Method:** POST
+   - **URL:** `/recipes/{id}/rating`
+   - **Protected:** No
+   - **Description:** Adds a rating to a specific recipe.
+
+### Search Recipes
+
+- **Method:** GET
+- **URL:** `/recipes/search?q={search_term}`
+- **Protected:** No
+- **Description:** Searches for recipes based on a name.
+
+### Authentication
+
+- **Login**
+  - **Method:** POST
+  - **URL:** `/login`
+  - **Description:** Authenticates a user and returns a JWT token.
+
+Protected endpoints require authentication. Include a valid JWT token in the `Authorization` header of your requests to access protected endpoints.
+
+## Example Requests Using Postman
+
+1. **Login**
+
+   - **Method:** POST
+   - **URL:** `http://localhost:8080/login`
+   - **Headers:** 
+     - `Content-Type: application/json`
+   - **Body:** 
+     ```json
+     {
+       "username": "your_username",
+       "password": "your_password"
+     }
+     ```
+
+2. **Create Recipe**
+
+   - **Method:** POST
+   - **URL:** `http://localhost:8080/recipes`
+   - **Headers:** 
+     - `Authorization: Bearer <your_jwt_token>`
+     - `Content-Type: application/json`
+   - **Body:** 
+     ```json
+     {
+       "name": "Spaghetti Carbonara",
+       "prep_time": 30,
+       "difficulty": 2,
+       "vegetarian": false
+     }
+     ```
+
+3. **List Recipes**
+
+   - **Method:** GET
+   - **URL:** `http://localhost:8080/recipes?page=1&per_page=10`
+   - **Headers:** None
+   - **Body:** None
+
+## Additional Notes
+
+- **Database:** The application can use both MySQL and PostgreSQL for data persistence.
+- **Caching:** Redis is set up and can be used for caching if implemented.
+- **Logging:** Error logging is implemented. Check `web/error.log` for any errors.
+- **Input Validation:** Input validation is implemented in `web/validation.php`.
+- **Security:** Best security practices are followed, including input validation and protected endpoints.
+
+## Troubleshooting
+
+- If you encounter any issues with database connections, ensure that the database containers are running and that the connection details in `db.php` match those in `docker-compose.yml`.
+- For any permission issues, make sure that the web server has the necessary permissions to write to the `error.log` file.
+
+## Conclusion
+
+Thank you for taking the time to review my submission. If you have any questions or need further clarification, please feel free to reach out.
